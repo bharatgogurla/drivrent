@@ -13,7 +13,7 @@ const NavbarOwner = () => {
             className="flex items-center gap-1.5 group"            
           >
             <img
-              src="./favicon.svg"
+              src="/favicon.svg"
               alt="DrivRent logo"
               className="h-8 w-8 transition-transform duration-200 group-hover:scale-105"
             />
