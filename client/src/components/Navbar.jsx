@@ -52,9 +52,7 @@ const Navbar = ({ setShowLogin }) => {
                 to={link.path}
                 onClick={() => setOpen(false)}
                 className={`relative font-medium transition-colors ${
-                  isActive
-                    ? "text-primary"
-                    : "text-gray-700 hover:text-primary"
+                  isActive ? "text-primary" : "text-gray-700 hover:text-primary"
                 }`}
               >
                 {link.name}
@@ -99,7 +97,7 @@ const Navbar = ({ setShowLogin }) => {
               }}
               className="cursor-pointer px-8 py-2.5 bg-primary hover:bg-primary-dull transition-colors text-white font-medium rounded-lg w-full"
             >
-              Logout
+              Login
             </button>
           </div>
         </div>
@@ -132,7 +130,7 @@ const Navbar = ({ setShowLogin }) => {
             onClick={() => setShowLogin(true)}
             className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition-colors text-white font-medium rounded-lg"
           >
-            Logout
+            Login
           </button>
         </div>
       </div>

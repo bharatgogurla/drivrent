@@ -1,40 +1,43 @@
-import React, { useState } from 'react'
-import Navbar from './components/Navbar'
-import { Routes, Route, useLocation } from 'react-router-dom'
-import Home from './pages/Home'
-import CarDetails from './pages/CarDetails'
-import Cars from './pages/Cars'
-import MyBooking from './pages/MyBooking'
-import Footer from './components/Footer'
-import Layout from './pages/owner/Layout'
-import Dashboard from './pages/owner/Dashboard'
-import AddCar from './pages/owner/AddCar'
-import ManageCars from './pages/owner/ManageCars'
-import ManageBookings from './pages/owner/ManageBookings'
+import React, { useState } from "react";
+import Navbar from "./components/Navbar";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Home from "./pages/Home";
+import CarDetails from "./pages/CarDetails";
+import Cars from "./pages/Cars";
+import MyBooking from "./pages/MyBooking";
+import Footer from "./components/Footer";
+import Layout from "./pages/owner/Layout";
+import Dashboard from "./pages/owner/Dashboard";
+import AddCar from "./pages/owner/AddCar";
+import ManageCars from "./pages/owner/ManageCars";
+import ManageBookings from "./pages/owner/ManageBookings";
+import Login from "./components/Login";
 
 const App = () => {
-  const [showLogin, setShowLogin] = useState(false)
-  const isOwnerPath = useLocation().pathname.startsWith('/owner')
+  const [showLogin, setShowLogin] = useState(false);
+  const isOwnerPath = useLocation().pathname.startsWith("/owner");
   return (
     <>
+      {showLogin && <Login setShowLogin={setShowLogin} />}
+
       {!isOwnerPath && <Navbar setShowLogin={setShowLogin} />}
 
       <Routes>
-        <Route path='/' element={<Home />}/>
-        <Route path='/car-details/:id' element={<CarDetails />}/>
-        <Route path='/cars' element={<Cars />}/>
-        <Route path='/my-bookings' element={<MyBooking />}/>
-        <Route path='/owner' element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/car-details/:id" element={<CarDetails />} />
+        <Route path="/cars" element={<Cars />} />
+        <Route path="/my-bookings" element={<MyBooking />} />
+        <Route path="/owner" element={<Layout />}>
           <Route index element={<Dashboard />}></Route>
-          <Route path='add-car' element={<AddCar />}></Route>
-          <Route path='manage-cars' element={<ManageCars />}></Route>          
-          <Route path='manage-bookings' element={<ManageBookings />}></Route>
+          <Route path="add-car" element={<AddCar />}></Route>
+          <Route path="manage-cars" element={<ManageCars />}></Route>
+          <Route path="manage-bookings" element={<ManageBookings />}></Route>
         </Route>
       </Routes>
 
       {!isOwnerPath && <Footer />}
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
