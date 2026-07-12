@@ -30,7 +30,7 @@ const Login = ({ setShowLogin }) => {
       <form
         onSubmit={onSubmitHandler}
         onClick={(e) => e.stopPropagation()}
-        className="sm:w-[350px] w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white"
+        className="sm:w-87.5 w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white"
       >
         <h1 className="text-primary text-3xl mt-10 font-medium">
           {state === "login" ? "Login" : "Sign up"}
