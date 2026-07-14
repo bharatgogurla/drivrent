@@ -1,5 +1,5 @@
-import User from "../models/User.js";
-import bcrypt from "bycrypt";
+import User from "../models/User.js"
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 // Generate JWT Token
@@ -13,7 +13,7 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password || !password.length < 8) {
+    if (!name || !email || !password || !password.length > 8) {
       return res.json({ success: false, message: "fill all the fields" });
     }
 
@@ -51,3 +51,14 @@ export const loginUser = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// Get User data using Token (JWT)
+export const getUserData = async (req,res) =>{
+    try {
+        const {user} = req;
+        res.json({success:true, user})
+    } catch (error) {
+        console.log(error.message);
+        res.json({success: false, message: error.message})
+    }
+}
