@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import ownerRouter from "./routes/ownerRoutes.js";
+import bookingRouter from "./routes/bookingRoutes.js"
 
 // Initialize Express App
 const app = express();
