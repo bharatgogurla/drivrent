@@ -2,6 +2,7 @@ import imagekit from "../configs/imageKit.js";
 import User from "../models/User.js";
 import Car from "../models/Car.js";
 import fs from "fs";
+import Booking from "../models/Booking.js";
 
 //API to Change Role of User
 export const changeToOwner = async (req, res) => {
@@ -91,7 +92,7 @@ export const deleteCar = async (req, res) => {
   try {
     const { _id } = req.user;
     const { carId } = req.body;
-    const car = await Car.find(carId);
+    const car = await Car.findById(carId);
 
     // Checking is car belongs to the user
     if (car.owner.toString() != _id.toString()) {
@@ -115,11 +116,77 @@ export const getDashboardData = async (req, res) => {
   try {
     const { _id, role } = req.user;
 
-    if (role != "owner") {
+    if (role !== "owner") {
       return res.json({ success: false, message: "Unauthorized" });
     }
 
     const cars = await Car.find({ owner: _id });
+    const bookings = await Booking.find({ owner: _id })
+      .populate("car")
+      .sort({ createdAt: -1 });
+
+    const pendingBookings = await Booking.find({
+      owner: _id,
+      status: "pending",
+    });
+    const completedBookings = await Booking.find({
+      owner: _id,
+      status: "confirmed",
+    });
+
+    // Calculate monthlyRevenue from bookings where status is confirmed
+    const monthlyRevenue = bookings
+      .slice()
+      .filter((booking) => booking.status === "confirmed")
+      .reduce((acc, booking) => acc + booking.price, 0);
+
+    const dashboardData = {
+      totalCars: cars.length,
+      totalBookings: bookings.length,
+      pendingBookings: pendingBookings.length,
+      completedBookings: completedBookings.length,
+      recentBookings: bookings.slice(0, 3),
+      monthlyRevenue,
+    };
+
+    res.json({ success: true, dashboardData });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// API to update user image
+export const updateUserImage = async () => {
+  try {
+    const { _id } = req.user;
+
+    const imageFile = req.file;
+
+    // Upload Image to ImageKit
+    const response = await imagekit.files.upload({
+      file: fs.createReadStream(imageFile.path),
+      fileName: imageFile.originalname,
+      folder: "/users",
+    });
+
+    // optimization through imageKit URL transformation
+    const optimizedImageUrl = imagekit.helper.buildSrc({
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+      src: response.filePath,
+      transformation: [
+        {
+          width: 400, // Width resizing
+          quality: "auto", //Auto compression
+          format: "webp", // Convert to modern format
+        },
+      ],
+    });
+
+    const image = optimizedImageUrl;
+
+    await User.findByIdAndUpdate(_id, { image });
+    res.json({ success: true, message: "Image Updated" });
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });
