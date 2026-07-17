@@ -1,12 +1,31 @@
 import React, { useState } from "react";
 import { menuLinks, assets } from "../assets/assets";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
-const Navbar = ({ setShowLogin }) => {
+const Navbar = () => {
+  const { setShowLogin, user, logout, isOwner, axios, setIsOwner } =
+    useAppContext();
+
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+
+  const changeRole = async () => {
+    try {
+      const { data } = await axios.post("/api/owner/change-role");
+      if (data.success) {
+        setIsOwner(true);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const isHome = location.pathname === "/";
 
@@ -83,21 +102,21 @@ const Navbar = ({ setShowLogin }) => {
           <div className="sm:hidden flex flex-col gap-3 w-full mt-6 pt-4 border-t border-borderColor">
             <button
               onClick={() => {
-                navigate("/owner");
-                setOpen(false);
+                isOwner ? (navigate("/owner"), setOpen(false)) : changeRole();
               }}
               className="cursor-pointer py-2 text-left font-medium text-gray-700 hover:text-primary transition-colors"
             >
-              Dashboard
+              {isOwner ? "Dashboard" : "List cars"}
             </button>
+
             <button
               onClick={() => {
-                setShowLogin(true);
+                user ? logout() : setShowLogin(true);
                 setOpen(false);
               }}
               className="cursor-pointer px-8 py-2.5 bg-primary hover:bg-primary-dull transition-colors text-white font-medium rounded-lg w-full"
             >
-              Login
+              {user ? "Logout" : "Login"}
             </button>
           </div>
         </div>
@@ -121,16 +140,20 @@ const Navbar = ({ setShowLogin }) => {
 
         <div className="hidden sm:flex items-center gap-6">
           <button
-            onClick={() => navigate("/owner")}
+            onClick={() => {
+              isOwner ? navigate("/owner") : changeRole();
+            }}
             className="cursor-pointer font-medium text-gray-700 hover:text-primary transition-colors"
           >
-            Dashboard
+            {isOwner ? "Dashboard" : "List Cars"}
           </button>
           <button
-            onClick={() => setShowLogin(true)}
+            onClick={() => {
+              user ? logout() : setShowLogin(true);
+            }}
             className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition-colors text-white font-medium rounded-lg"
           >
-            Login
+            {user ? "Logout" : "Login"}
           </button>
         </div>
       </div>

@@ -58,7 +58,8 @@ export const AppProvider = ({ children }) => {
   // useEffect to retrieve the token from localStorage
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setToken(token);
+    setToken(token)
+    fetchCars()
   }, []);
 
   // useEffect to fetch user data when token is available

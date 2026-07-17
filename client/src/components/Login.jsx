@@ -1,6 +1,9 @@
 import React from "react";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
-const Login = ({ setShowLogin }) => {
+const Login = () => {
+  const { setShowLogin, axios, setToken, navigate } = useAppContext();
   const [state, setState] = React.useState("login");
 
   const [formData, setFormData] = React.useState({
@@ -19,7 +22,27 @@ const Login = ({ setShowLogin }) => {
   };
 
   const onSubmitHandler = async (event) => {
-    event.preventDefault();
+    try {
+      event.preventDefault();
+
+      const { name, email, password } = formData;
+      const { data } = await axios.post(`/api/user/${state}`, {
+        name,
+        email,
+        password,
+      });
+
+      if (data.success) {
+        navigate("/");
+        setToken(data.token);
+        localStorage.setItem("token", data.token);
+        setShowLogin(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
