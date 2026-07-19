@@ -1,20 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { dummyCarData, assets } from "../assets/assets";
+import { assets } from "../assets/assets";
 import Loader from "../components/Loader";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 const CarDetails = () => {
   const { id } = useParams();
+
+  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate } =
+    useAppContext();
   const navigate = useNavigate();
   const [car, setCar] = useState(null);
   const currency = import.meta.env.VITE_CURRENCY;
 
   useEffect(() => {
-    setCar(dummyCarData.find((car) => car._id === id));
-  }, [id]);
+    setCar(cars.find((car) => car._id === id));
+  }, [cars, id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const { data } = await axios.post("/api/bookings/create", {
+        car: id,
+        pickupDate,
+        returnDate,
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        navigate("/my-bookings");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return car ? (
@@ -166,22 +187,33 @@ const CarDetails = () => {
           >
             {/* Price Section */}
             <div className="mb-6 pb-6 border-b border-gray-200">
-              <div className="flex items-end gap-2">
-                <span className="text-4xl font-bold text-primary">
-                  {currency}
-                  {car.pricePerDay}
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Rental Price</p>
+                  <h2 className="text-4xl font-bold text-primary">
+                    {currency}
+                    {car.pricePerDay}
+                  </h2>
+                </div>
+
+                <span className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">
+                  / day
                 </span>
-                <span className="text-gray-500 text-sm pb-1">per day</span>
               </div>
             </div>
 
             {/* Pickup Date */}
             <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-2">
+              <label
+                htmlFor="pickup-date"
+                className="block text-gray-700 font-medium mb-2"
+              >
                 Pickup Date
               </label>
               <input
-                type="text"
+                value={pickupDate}
+                onChange={(e) => setPickupDate(e.target.value)}
+                type="date"
                 placeholder="dd-mm-yyyy"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
               />
@@ -189,11 +221,16 @@ const CarDetails = () => {
 
             {/* Return Date */}
             <div className="mb-6">
-              <label className="block text-gray-700 font-medium mb-2">
+              <label
+                htmlFor="return-date"
+                className="block text-gray-700 font-medium mb-2"
+              >
                 Return Date
               </label>
               <input
-                type="text"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                type="date"
                 placeholder="dd-mm-yyyy"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
               />
