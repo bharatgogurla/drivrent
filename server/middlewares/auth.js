@@ -7,7 +7,7 @@ import User from "../models/User.js";
         return res.json({success:false, message: "not authorized"})
     }
     try {
-        const userId = jwt.decode(token, process.env.JWT_SECRET)
+        const userId = jwt.verify(token, process.env.JWT_SECRET)
 
         if(!userId){
             return res.json({success:false, message: "not authorized"})
@@ -16,5 +16,19 @@ import User from "../models/User.js";
         next();
     } catch (error) {
         return res.json({success:false, message: "not authorized"})
+    }
+}
+
+export const verifyOwner = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            return res.json({ success: false, message: "not authorized" });
+        }
+        if (req.user.role !== "owner") {
+            return res.json({ success: false, message: "Access denied. Owners only." });
+        }
+        next();
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
     }
 }

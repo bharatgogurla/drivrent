@@ -4,6 +4,7 @@ import { assets } from "../assets/assets";
 import Loader from "../components/Loader";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+import { motion } from "motion/react";
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -41,7 +42,10 @@ const CarDetails = () => {
   return car ? (
     <div className="px-6 md:px-16 lg:px-24 xl:px-32 mt-16">
       {/* Back Button */}
-      <button
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-8 text-gray-500 cursor-pointer hover:text-gray-700 transition"
       >
@@ -51,12 +55,17 @@ const CarDetails = () => {
           className="rotate-180 opacity-65 w-5"
         />
         Back to all cars
-      </button>
+      </motion.button>
 
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Column - Car Details */}
-        <div className="lg:w-2/3">
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.15 }}
+          className="lg:w-2/3"
+        >
           {/* Car Image */}
           <div className="w-full h-96 rounded-xl overflow-hidden mb-8">
             <img
@@ -177,10 +186,15 @@ const CarDetails = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column - Booking Form */}
-        <div className="lg:w-1/3">
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.45, delay: 0.3 }}
+          className="lg:w-1/3"
+        >
           <form
             onSubmit={handleSubmit}
             className="bg-white rounded-xl p-6 shadow-lg sticky top-20 border border-gray-100"
@@ -249,7 +263,7 @@ const CarDetails = () => {
               No credit card required to reserve
             </p>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
   ) : (

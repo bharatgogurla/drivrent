@@ -17,6 +17,7 @@ export const AppProvider = ({ children }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const [cars, setCars] = useState([]);
 
@@ -28,10 +29,14 @@ export const AppProvider = ({ children }) => {
         setUser(data.user);
         setIsOwner(data.user.role === "owner");
       } else {
-        navigate("/");
+        logout(false);
+        toast.error("Session expired. Please log in again.");
       }
     } catch (error) {
-      toast.error(error.message);
+      logout(false);
+      toast.error("Session expired. Please log in again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,13 +51,15 @@ export const AppProvider = ({ children }) => {
   };
 
   // Function to log out the user
-  const logout = () => {
+  const logout = (showToast = true) => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
     setIsOwner(false);
     axios.defaults.headers.common["Authorization"] = "";
-    toast.success("You have been logged out");
+    if (showToast) {
+      toast.success("You have been logged out");
+    }
   };
 
   // useEffect to retrieve the token from localStorage
@@ -60,15 +67,27 @@ export const AppProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     setToken(token)
     fetchCars()
+    if (!token) {
+      setLoading(false);
+    }
   }, []);
 
   // useEffect to fetch user data when token is available
   useEffect(() => {
     if (token) {
+      setLoading(true);
       axios.defaults.headers.common["Authorization"] = `${token}`;
       fetchUser();
+      setShowLogin(false);
     }
   }, [token]);
+
+  // Prevent login modal from being shown if authenticated
+  useEffect(() => {
+    if (token && showLogin) {
+      setShowLogin(false);
+    }
+  }, [token, showLogin]);
 
   const value = {
     navigate,
@@ -91,6 +110,8 @@ export const AppProvider = ({ children }) => {
     setPickupDate,
     returnDate,
     setReturnDate,
+    loading,
+    setLoading,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+import { motion } from "motion/react";
 
 const Login = () => {
   const { setShowLogin, axios, setToken, navigate } = useAppContext();
@@ -10,6 +11,7 @@ const Login = () => {
     name: "",
     email: "",
     password: "",
+    role: "user",
   });
 
   const handleChange = (e) => {
@@ -25,18 +27,22 @@ const Login = () => {
     try {
       event.preventDefault();
 
-      const { name, email, password } = formData;
-      const { data } = await axios.post(`/api/user/${state}`, {
-        name,
-        email,
-        password,
-      });
+      const { name, email, password, role } = formData;
+      const payload = state === "login"
+        ? { email, password, role }
+        : { name, email, password, role };
+
+      const { data } = await axios.post(`/api/user/${state}`, payload);
 
       if (data.success) {
-        navigate("/");
         setToken(data.token);
         localStorage.setItem("token", data.token);
         setShowLogin(false);
+        if (data.role === "owner") {
+          navigate("/owner", { replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
       } else {
         toast.error(data.message);
       }
@@ -50,15 +56,36 @@ const Login = () => {
       onClick={() => setShowLogin(false)}
       className="fixed top-0 bottom-0 left-0 right-0 z-100 flex items-center justify-center text-sm text-gray-600 bg-black/50"
     >
-      <form
+      <motion.form
         onSubmit={onSubmitHandler}
         onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
         className="sm:w-87.5 w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white"
       >
         <h1 className="text-primary text-3xl mt-10 font-medium">
           {state === "login" ? "Login" : "Sign up"}
         </h1>
         <p className="text-gray text-sm mt-2">Please sign in to continue</p>
+
+        {/* Role Selection Tabs */}
+        <div className="flex w-full mt-4 bg-gray-100 p-1 rounded-full border border-gray-200">
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, role: 'user' }))}
+            className={`flex-1 py-1.5 rounded-full font-medium transition-all ${formData.role === 'user' ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            User
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, role: 'owner' }))}
+            className={`flex-1 py-1.5 rounded-full font-medium transition-all ${formData.role === 'owner' ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Owner
+          </button>
+        </div>
         {state !== "login" && (
           <div className="flex items-center mt-6 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
             <svg
@@ -163,7 +190,7 @@ const Login = () => {
             click here
           </a>
         </p>
-      </form>
+      </motion.form>
     </div>
   );
 };

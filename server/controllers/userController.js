@@ -12,7 +12,7 @@ const generateToken = (userId) => {
 // Register User
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     if (!name || !email || !password || !password.length > 8) {
       return res.json({ success: false, message: "fill all the fields" });
@@ -24,9 +24,9 @@ export const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({ name, email, password: hashedPassword, role: role || 'user' });
     const token = generateToken(user._id.toString());
-    res.json({ success: true, token });
+    res.json({ success: true, token, role: user.role });
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });
@@ -36,7 +36,7 @@ export const registerUser = async (req, res) => {
 // Login User
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -45,8 +45,11 @@ export const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.json({ success: false, message: "Invalid Credentials" });
     }
+    if (role && user.role !== role) {
+      return res.json({ success: false, message: `Access denied. Your account is registered as a ${user.role}.` });
+    }
     const token = generateToken(user._id.toString());
-    res.json({ success: true, token });
+    res.json({ success: true, token, role: user.role });
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });

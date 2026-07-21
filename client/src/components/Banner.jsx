@@ -1,5 +1,6 @@
 import React from "react";
 import { assets } from "../assets/assets";
+import { motion } from "motion/react";
 
 const Banner = () => {
   return (
@@ -21,10 +22,23 @@ const Banner = () => {
 
         <div className="relative w-full max-w-105 lg:mt-2">
           <div className="absolute -right-10 top-1/2 hidden h-28 w-65 -translate-y-1/2 rounded-full bg-white/10 blur-3xl lg:block" />
-          <img
+          <motion.img
             src={assets.banner_car_image}
             alt="Luxury car"
             className="relative mx-auto mt-2 w-full max-w-90 max-h-36 object-contain"
+            initial={{
+              opacity: 0,
+              x: 60,
+            }}
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           />
         </div>
       </div>

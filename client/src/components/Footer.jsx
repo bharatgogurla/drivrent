@@ -1,10 +1,17 @@
 import React from "react";
 import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
+import { motion } from "motion/react";
 
 const Footer = () => {
   return (
-    <footer className="px-6 md:px-16 lg:px-24 xl:px-32 pt-23 w-full text-gray-600">
+    <motion.footer
+     initial={{ opacity: 0, y: 80 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true, amount: 0.4 }}
+  transition={{ duration: 0.8, ease: "easeOut" }}
+      className="px-6 md:px-16 lg:px-24 xl:px-32 pt-23 w-full text-gray-600"
+    >
       {/* Top section */}
       <div className="flex flex-col md:flex-row justify-between gap-12 border-b border-gray-300 pb-8">
         {/* Brand column */}
@@ -144,7 +151,7 @@ const Footer = () => {
           </a>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 

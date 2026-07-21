@@ -4,6 +4,7 @@ import CarCard from "../components/CarCard";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
+import { motion } from "motion/react";
 
 const Cars = () => {
   //getting search params fro url
@@ -62,7 +63,12 @@ const Cars = () => {
   return (
     <section className="bg-slate-50 py-18">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="flex flex-col items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center text-center"
+        >
           <h1 className="text-4xl font-bold tracking-tight text-slate-950">
             Available Cars
           </h1>
@@ -70,48 +76,59 @@ const Cars = () => {
             Browse our selection of premium vehicles available for your next
             adventure
           </p>
+        </motion.div>
 
-          <div className="mt-6 w-full max-w-xl">
-            <label htmlFor="car-search" className="sr-only">
-              Search by make, model, or features
-            </label>
-            <div className="relative">
-              <img
-                src={assets.search_icon}
-                alt="Search"
-                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                id="car-search"
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Search by make, model, or features"
-                className="w-full rounded-full border border-slate-200 bg-white py-3.5 pl-12 pr-12 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-3 my-auto inline-flex h-9 items-center justify-center rounded-full bg-slate-100 px-2.5 text-slate-400 transition hover:bg-slate-200"
-              >
-                <img
-                  src={assets.filter_icon}
-                  alt="Filter"
-                  className="h-5 w-5"
-                />
-              </button>
-            </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.25 }}
+          className="mx-auto mt-6 w-full max-w-xl"
+        >
+          <label htmlFor="car-search" className="sr-only">
+            Search by make, model, or features
+          </label>
+          <div className="relative">
+            <img
+              src={assets.search_icon}
+              alt="Search"
+              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              id="car-search"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Search by make, model, or features"
+              className="w-full rounded-full border border-slate-200 bg-white py-3.5 pl-12 pr-12 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-3 my-auto inline-flex h-9 items-center justify-center rounded-full bg-slate-100 px-2.5 text-slate-400 transition hover:bg-slate-200"
+            >
+              <img src={assets.filter_icon} alt="Filter" className="h-5 w-5" />
+            </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="mt-6 text-sm text-slate-600">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45 }}
+          className="mt-6 text-sm text-slate-600"
+        >
           Showing {filteredCars.length} Cars
-        </div>
+        </motion.div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.6 }}
+          className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {filteredCars.map((car) => (
             <CarCard key={car._id} car={car} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

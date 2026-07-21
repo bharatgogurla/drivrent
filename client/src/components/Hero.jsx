@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { assets, cityList } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
+import { motion } from "motion/react";
 
 const Hero = () => {
   const [pickupLocation, setPickupLocation] = useState("");
@@ -22,12 +23,23 @@ const Hero = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center gap-14 bg-light text-center">
-      <h1 className="text-4xl md:text-5xl font-semibold">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-12 bg-light text-center overflow-hidden">
+      <motion.h1
+        initial={{ opacity: 0, y: -25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-4xl md:text-5xl font-semibold"
+      >
         Luxury cars on Rent
-      </h1>
+      </motion.h1>
 
-      <form
+      <motion.form
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.6,
+          delay: 0.2,
+        }}
         onSubmit={handleSearch}
         className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 rounded-lg md:rounded-full w-full max-w-200 bg-white shadow-[0px_8px_20px_rgba(0,0,0,0.1)]"
       >
@@ -73,17 +85,50 @@ const Hero = () => {
             />
           </div>
         </div>
-        <button className="flex items-center justify-center gap-1 px-9 py-3 max-sm:mt-4 bg-primary hover:bg-primary-dull text-white rounded-full cursor-pointer">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 350 }}
+          className="flex items-center justify-center gap-1 px-9 py-3 max-sm:mt-4 bg-primary hover:bg-primary-dull text-white rounded-full cursor-pointer"
+        >
           <img
             src={assets.search_icon}
             alt="Search"
             className="brightness-300"
           ></img>
           Search
-        </button>
-      </form>
+        </motion.button>
+      </motion.form>
 
-      <img src={assets.main_car} alt="car" className="max-h-72"></img>
+     <motion.img
+  src={assets.main_car}
+  alt="car"
+  className="max-h-72"
+  initial={{ x: 250, opacity: 0 }}
+  animate={{
+    x: 0,
+    opacity: 1,
+    y: [0, -8, 0],
+  }}
+  transition={{
+    x: {
+      type: "spring",
+      stiffness: 80,
+      damping: 15,
+      delay: 0.4,
+    },
+    opacity: {
+      duration: 0.6,
+      delay: 0.4,
+    },
+    y: {
+      duration: 2.5,
+      repeat: Infinity,
+      ease: "easeInOut",
+      delay: 1.2,
+    },
+  }}
+/>
     </div>
   );
 };
