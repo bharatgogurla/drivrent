@@ -48,8 +48,7 @@ const Navbar = () => {
         isHome ? "bg-light" : "bg-white"
       }`}
     >
-      <MotionLink
-        to="/"
+      <motion.div       
         whileHover={{
           y: -2,
           rotate: -2,
@@ -64,7 +63,7 @@ const Navbar = () => {
         <span className="text-2xl font-bold leading-none text-gray-700">
           DrivRent
         </span>
-      </MotionLink>
+      </motion.div>
 
       {/* Backdrop for mobile menu */}
       <AnimatePresence>
