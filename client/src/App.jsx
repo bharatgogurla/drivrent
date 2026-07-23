@@ -11,6 +11,7 @@ import Dashboard from "./pages/owner/Dashboard";
 import AddCar from "./pages/owner/AddCar";
 import ManageCars from "./pages/owner/ManageCars";
 import ManageBookings from "./pages/owner/ManageBookings";
+import OwnerProfile from "./pages/owner/OwnerProfile";
 import Login from "./components/Login";
 import Loader from "./components/Loader";
 import { Toaster } from "react-hot-toast";
@@ -87,15 +88,51 @@ const App = () => {
       {!isOwnerPath && <Navbar />}
 
       <Routes>
-        <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
-        <Route path="/car-details/:id" element={<PublicRoute><CarDetails /></PublicRoute>} />
-        <Route path="/cars" element={<PublicRoute><Cars /></PublicRoute>} />
-        <Route path="/my-bookings" element={<RenterProtectedRoute><MyBooking /></RenterProtectedRoute>} />
-        <Route path="/owner" element={<OwnerProtectedRoute><Layout /></OwnerProtectedRoute>}>
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Home />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/car-details/:id"
+          element={
+            <PublicRoute>
+              <CarDetails />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/cars"
+          element={
+            <PublicRoute>
+              <Cars />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            <RenterProtectedRoute>
+              <MyBooking />
+            </RenterProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner"
+          element={
+            <OwnerProtectedRoute>
+              <Layout />
+            </OwnerProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />}></Route>
           <Route path="add-car" element={<AddCar />}></Route>
           <Route path="manage-cars" element={<ManageCars />}></Route>
           <Route path="manage-bookings" element={<ManageBookings />}></Route>
+          <Route path="profile" element={<OwnerProfile />} />
         </Route>
       </Routes>
 

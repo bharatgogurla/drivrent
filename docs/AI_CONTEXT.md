@@ -91,7 +91,10 @@ The application uses `react-router-dom` (v7) for client-side routing.
 - **Shared Functions:** `fetchUser()`, `fetchCars()`, `logout()`.
 
 ### Auth, Booking & Owner Dashboard Flows
-- **Authentication Flow:** User clicks "Login/Sign Up" in the Navbar -> `Login` modal displays with a role selector ("User" or "Owner") -> submitting makes an Axios call to `/api/user/login` or `/api/user/register` passing the chosen `role` -> Server validates details, verifies selected role matches the database entry (for logins), and returns JWT token and confirmed `role` -> React saves token to `localStorage` and state -> redirects Users to `/` and Owners to `/owner`.
+- **Authentication Flow:** User clicks "Login/Sign Up" in the Navbar -> Premium `Login` modal (`Login.jsx`) displays with a split layout:
+  - The left panel features an animated route travel SVG showing ride/travel progress.
+  - The right panel provides an interactive form with Outfit typography, eye-toggle for password, and smooth tab switching between Renter and Owner roles.
+  - Submitting the form makes an Axios call to `/api/user/login` or `/api/user/register` passing the chosen `role` -> Server validates details, verifies selected role matches the database entry (for logins), and returns JWT token and confirmed `role` -> React saves token to `localStorage` and state -> redirects Users to `/` and Owners to `/owner` with history replacement.
 - **Booking Flow:** User searches by location/dates on Homepage -> Redirects to `/cars?pickupLocation=...` -> calls `/api/bookings/check-availability` -> User selects a car to navigate to `/car-details/:id` -> clicks "Book Now" -> calls `/api/bookings/create` -> Redirects to `/my-bookings` with status `"pending"`.
 - **Owner Dashboard Flow:** Owners who log in with the `"Owner"` role are automatically redirected to `/owner` and can access `/owner/add-car`, `/owner/manage-cars`, `/owner/manage-bookings`. *Note on page refresh:* The layout guard waits until `loading` is false. If the user is verified as an owner, they remain on their active page. If the validation fails (or user role is not owner), they are redirected to `/` and the Login modal automatically opens.
 
@@ -174,7 +177,11 @@ The application uses `react-router-dom` (v7) for client-side routing.
 | **POST** | `/api/owner/toggle-car` | `toggleCarAvailability` | `protect`, `verifyOwner` | `{ carId }` | `{ success: true, message: "..." }` | `owner/ManageCars.jsx` |
 | **POST** | `/api/owner/delete-car` | `deleteCar` | `protect`, `verifyOwner` | `{ carId }` | `{ success: true, message: "Car Removed" }` | `owner/ManageCars.jsx` |
 | **GET** | `/api/owner/dashboard` | `getDashboardData` | `protect`, `verifyOwner` | None | `{ success: true, dashboardData }` | `owner/Dashboard.jsx` |
-| **POST** | `/api/owner/update-image` | `updateUserImage` | `protect`, `verifyOwner`, `upload.single("image")` | `multipart/form-data` with file `image` | `{ success: true, message: "Image Updated" }` | `owner/Sidebar.jsx` |
+| **POST** | `/api/owner/update-image` | `updateUserImage` | `protect`, `verifyOwner`, `upload.single("image")` | `multipart/form-data` with file `image` | `{ success: true, message: "Image Updated" }` | `owner/OwnerProfile.jsx` |
+| **POST** | `/api/owner/update-profile` | `updateProfile` | `protect`, `verifyOwner` | `{ name, phone }` | `{ success: true, message: "Profile updated successfully", user }` | `owner/OwnerProfile.jsx` |
+| **POST** | `/api/owner/change-password` | `changePassword` | `protect`, `verifyOwner` | `{ currentPassword, newPassword }` | `{ success: true, message: "Password changed successfully" }` | `owner/OwnerProfile.jsx` |
+| **POST** | `/api/owner/delete-image` | `deleteProfileImage` | `protect`, `verifyOwner` | None | `{ success: true, message: "Profile image deleted", user }` | `owner/OwnerProfile.jsx` |
+| **POST** | `/api/owner/delete-account` | `deleteAccount` | `protect`, `verifyOwner` | `{ password }` | `{ success: true, message: "Account deleted successfully" }` | `owner/OwnerProfile.jsx` |
 | **POST** | `/api/bookings/check-availability` | `checkAvailabilityOfCar` | None | `{ location, pickupDate, returnDate }` | `{ success: true, availableCars }` | `Cars.jsx` |
 | **POST** | `/api/bookings/create` | `createBooking` | `protect` | `{ car, pickupDate, returnDate }` | `{ success: true, message: "Booking Created" }` | `CarDetails.jsx` |
 | **GET** | `/api/bookings/user` | `getUserBookings` | `protect` | None | `{ success: true, bookings }` | `MyBooking.jsx` |

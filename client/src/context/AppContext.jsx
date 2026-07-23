@@ -60,13 +60,14 @@ export const AppProvider = ({ children }) => {
     if (showToast) {
       toast.success("You have been logged out");
     }
+    navigate("/", { replace: true });
   };
 
   // useEffect to retrieve the token from localStorage
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setToken(token)
-    fetchCars()
+    setToken(token);
+    fetchCars();
     if (!token) {
       setLoading(false);
     }

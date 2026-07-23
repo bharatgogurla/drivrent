@@ -1,196 +1,317 @@
-import React from "react";
+// Login.jsx
+// Requires: lucide-react (icons), react-hot-toast, motion (framer-motion v11+ "motion/react")
+// Uses the app's Outfit font + Tailwind theme tokens (--color-primary, --color-primary-dull,
+// --color-light, --color-borderColor) — no extra font import needed since Outfit is already
+// pulled in globally via your theme CSS.
+
+import React, { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
-import { motion } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { Mail, Lock, User, Eye, EyeOff, MapPin, KeyRound } from "lucide-react";
+
+// Role drives copy and the animated route accent — the toggle isn't just a
+// filter, it changes what the panel is telling you. Both roles stay inside
+// the theme's blue family: renters get the primary blue, owners get the
+// slightly deeper "dull" shade, so the whole modal still reads as one brand.
+const ROLE_CONTENT = {
+  user: {
+    label: "Renter",
+    eyebrow: "FOR RENTERS",
+    heading: "Wherever you're headed, there's a car waiting.",
+    accent: "var(--color-primary)",
+    icon: MapPin,
+  },
+  owner: {
+    label: "Owner",
+    eyebrow: "FOR OWNERS",
+    heading: "Turn idle days into paid ones.",
+    accent: "var(--color-primary-dull)",
+    icon: KeyRound,
+  },
+};
+
+const PlateBadge = ({ role, accent, dark }) => (
+  <div className="flex items-center gap-2">
+    <span className="w-2 h-2 rounded-full" style={{ background: accent }} />
+    <span
+      className={`font-mono text-[11px] tracking-[0.15em] ${dark ? "text-white/70" : "text-gray-400"}`}
+    >
+      DRIVRENT 
+    </span>
+  </div>
+);
+
+const Field = ({ id, label, icon: Icon, accent, ...props }) => {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <div
+        className="flex items-center gap-2.5 h-12 rounded-full border bg-white pl-5 pr-4 transition-colors motion-reduce:transition-none"
+        style={{ borderColor: focused ? accent : "var(--color-borderColor)" }}
+      >
+        <Icon size={16} className="shrink-0" style={{ color: focused ? accent : "#9CA3AF" }} />
+        <input
+          id={id}
+          {...props}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="w-full border-none outline-none ring-0 bg-transparent text-sm text-[#171A1D] placeholder:text-gray-400"
+        />
+      </div>
+    </div>
+  );
+};
 
 const Login = () => {
   const { setShowLogin, axios, setToken, navigate } = useAppContext();
-  const [state, setState] = React.useState("login");
+  const [mode, setMode] = useState("login"); // "login" | "register"
+  const [role, setRole] = useState("user"); // "user" | "owner"
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
-  const [formData, setFormData] = React.useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "user",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const active = ROLE_CONTENT[role];
+
   const onSubmitHandler = async (event) => {
+    event.preventDefault();
+    setLoading(true);
     try {
-      event.preventDefault();
-
-      const { name, email, password, role } = formData;
-      const payload = state === "login"
-        ? { email, password, role }
-        : { name, email, password, role };
-
-      const { data } = await axios.post(`/api/user/${state}`, payload);
+      const { name, email, password } = formData;
+      const payload = mode === "login" ? { email, password, role } : { name, email, password, role };
+      const { data } = await axios.post(`/api/user/${mode}`, payload);
 
       if (data.success) {
         setToken(data.token);
         localStorage.setItem("token", data.token);
         setShowLogin(false);
-        if (data.role === "owner") {
-          navigate("/owner", { replace: true });
-        } else {
-          navigate("/", { replace: true });
-        }
+        navigate(data.role === "owner" ? "/owner" : "/", { replace: true });
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
       onClick={() => setShowLogin(false)}
-      className="fixed top-0 bottom-0 left-0 right-0 z-100 flex items-center justify-center text-sm text-gray-600 bg-black/50"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-[#0f172a]/70 backdrop-blur-sm p-4"
     >
-      <motion.form
-        onSubmit={onSubmitHandler}
+      <motion.div
         onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
-        className="sm:w-87.5 w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white"
+        exit={{ opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ duration: prefersReducedMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-[840px] grid grid-cols-1 md:grid-cols-[0.85fr_1fr] rounded-[28px] overflow-hidden shadow-2xl bg-light"
       >
-        <h1 className="text-primary text-3xl mt-10 font-medium">
-          {state === "login" ? "Login" : "Sign up"}
-        </h1>
-        <p className="text-gray text-sm mt-2">Please sign in to continue</p>
 
-        {/* Role Selection Tabs */}
-        <div className="flex w-full mt-4 bg-gray-100 p-1 rounded-full border border-gray-200">
-          <button
-            type="button"
-            onClick={() => setFormData(prev => ({ ...prev, role: 'user' }))}
-            className={`flex-1 py-1.5 rounded-full font-medium transition-all ${formData.role === 'user' ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        {/* Route panel — signature element: a dashed route that quietly travels
+            the length of the card, echoing the idea of a trip in progress. */}
+        <div className="relative hidden md:flex flex-col justify-between bg-[#0b1220] text-white px-8 py-9 overflow-hidden">
+          <svg
+            className="absolute inset-0 w-full h-full"
+            viewBox="0 0 280 420"
+            preserveAspectRatio="none"
+            aria-hidden="true"
           >
-            User
-          </button>
-          <button
-            type="button"
-            onClick={() => setFormData(prev => ({ ...prev, role: 'owner' }))}
-            className={`flex-1 py-1.5 rounded-full font-medium transition-all ${formData.role === 'owner' ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            Owner
-          </button>
-        </div>
-        {state !== "login" && (
-          <div className="flex items-center mt-6 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
+            <path
+              d="M40 -20 C 90 60, 10 140, 60 220 S 180 340, 140 440"
               fill="none"
-              stroke="#6B7280"
-              strokeWidth="2"
+              stroke="#1e293b"
+              strokeWidth="3"
+              strokeDasharray="2 14"
               strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-user-round-icon lucide-user-round"
+            />
+            <path
+              d="M40 -20 C 90 60, 10 140, 60 220 S 180 340, 140 440"
+              fill="none"
+              stroke={active.accent}
+              strokeWidth="3"
+              strokeDasharray="2 14"
+              strokeLinecap="round"
+              className={prefersReducedMotion ? "" : "route-travel"}
+            />
+          </svg>
+
+          <div className="relative z-[1]">
+            <span
+              className="inline-block text-[11px] tracking-[0.2em] font-semibold"
+              style={{ color: active.accent }}
             >
-              <circle cx="12" cy="8" r="5" />
-              <path d="M20 21a8 8 0 0 0-16 0" />
-            </svg>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              className="border-none outline-none ring-0"
-              value={formData.name}
+              {active.eyebrow}
+            </span>
+            <h2
+              className="mt-3 uppercase text-[28px] leading-[1.15] tracking-wide font-semibold"
+            >
+              {active.heading}
+            </h2>
+          </div>
+
+          <div className="relative z-[1]">
+            <PlateBadge role={role} accent={active.accent} dark />
+          </div>
+        </div>
+
+        {/* Form panel */}
+        <div className="px-7 py-9 sm:px-9 bg-white">
+          <div className="md:hidden mb-6">
+            <PlateBadge role={role} accent={active.accent} />
+          </div>
+
+          <h1 className="uppercase text-[26px] tracking-wide text-[#171A1D] font-semibold">
+            {mode === "login" ? "Welcome back!" : "Create account"}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1.5">
+            {mode === "login"
+              ? "Sign in to pick up where you left off."
+              : "Set up your account and get on the road."}
+          </p>
+
+          {/* Role toggle — the sliding highlight and color carry through
+              into the copy above and the button below, so switching it
+              actually changes what you're being told, not just a filter. */}
+          <div className="relative grid grid-cols-2 mt-6 h-11 rounded-full bg-light p-1">
+            <motion.div
+              className="absolute inset-y-1 w-[calc(50%-4px)] rounded-full motion-reduce:transition-none"
+              style={{ background: active.accent }}
+              animate={{ x: role === "owner" ? "calc(100% + 4px)" : "0%" }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: "easeOut" }}
+            />
+            {Object.entries(ROLE_CONTENT).map(([key, val]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setRole(key)}
+                className={`relative z-[1] rounded-full text-sm font-medium transition-colors ${
+                  role === key ? "text-white" : "text-gray-500"
+                }`}
+              >
+                {val.label}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={onSubmitHandler} className="mt-6 flex flex-col gap-3.5">
+            <AnimatePresence initial={false}>
+              {mode === "register" && (
+                <motion.div
+                  key="name"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <Field
+                    id="name"
+                    label="Full name"
+                    icon={User}
+                    type="text"
+                    name="name"
+                    placeholder="Full name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    accent={active.accent}
+                    required
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <Field
+              id="email"
+              label="Email address"
+              icon={Mail}
+              type="email"
+              name="email"
+              placeholder="Email address"
+              value={formData.email}
               onChange={handleChange}
+              accent={active.accent}
               required
             />
-          </div>
-        )}
-        <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6B7280"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-mail-icon lucide-mail"
-          >
-            <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-            <rect x="2" y="4" width="20" height="16" rx="2" />
-          </svg>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email id"
-            className="border-none outline-none ring-0"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <div
+                className="relative flex items-center gap-2.5 h-12 rounded-full border bg-white pl-5 pr-4 transition-colors motion-reduce:transition-none"
+                style={{ borderColor: passwordFocused ? active.accent : "var(--color-borderColor)" }}
+              >
+                <Lock size={16} className="shrink-0" style={{ color: passwordFocused ? active.accent : "#9CA3AF" }} />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
+                  required
+                  className="w-full border-none outline-none ring-0 bg-transparent text-sm text-[#171A1D] placeholder:text-gray-400 pr-6"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-4 text-gray-400 hover:text-gray-600"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {mode === "login" && (
+              <button
+                type="button"
+                className="self-start text-xs font-medium -mt-1"
+                style={{ color: active.accent }}
+              >
+                Forgot password?
+              </button>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 h-12 rounded-full text-white font-medium text-sm transition-opacity disabled:opacity-60"
+              style={{ background: active.accent }}
+            >
+              {loading ? "One moment…" : mode === "login" ? "Sign in" : "Create account"}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-gray-500 mt-5">
+            {mode === "login" ? "New to DrivRent? " : "Already driving with us? "}
+            <button
+              type="button"
+              onClick={() => setMode((m) => (m === "login" ? "register" : "login"))}
+              className="font-medium"
+              style={{ color: active.accent }}
+            >
+              {mode === "login" ? "Create an account" : "Sign in"}
+            </button>
+          </p>
         </div>
-        <div className="flex items-center mt-4 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6B7280"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-lock-icon lucide-lock"
-          >
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="border-none outline-none ring-0"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mt-4 text-left text-primary">
-          <button className="text-sm" type="reset">
-            Forget password?
-          </button>
-        </div>
-        <button
-          type="submit"
-          className="mt-2 w-full h-11 rounded-full text-white bg-primary hover:opacity-90 transition-opacity"
-        >
-          {state === "login" ? "Login" : "Sign up"}
-        </button>
-        <p
-          onClick={() =>
-            setState((prev) => (prev === "login" ? "register" : "login"))
-          }
-          className="text-gray-500 text-sm mt-3 mb-11"
-        >
-          {state === "login"
-            ? "Don't have an account?"
-            : "Already have an account?"}{" "}
-          <a href="#" className="text-primary hover:underline">
-            click here
-          </a>
-        </p>
-      </motion.form>
+      </motion.div>
     </div>
   );
 };

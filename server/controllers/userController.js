@@ -24,7 +24,12 @@ export const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword, role: role || 'user' });
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || "user",
+    });
     const token = generateToken(user._id.toString());
     res.json({ success: true, token, role: user.role });
   } catch (error) {
@@ -46,7 +51,10 @@ export const loginUser = async (req, res) => {
       return res.json({ success: false, message: "Invalid Credentials" });
     }
     if (role && user.role !== role) {
-      return res.json({ success: false, message: `Access denied. Your account is registered as a ${user.role}.` });
+      return res.json({
+        success: false,
+        message: `Access denied. Your account is registered as a ${user.role}.`,
+      });
     }
     const token = generateToken(user._id.toString());
     res.json({ success: true, token, role: user.role });

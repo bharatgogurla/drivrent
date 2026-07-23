@@ -10,7 +10,7 @@ const testimonials = [
     image: assets.testimonial_image_1,
     rating: 5,
     feedback:
-      "I've rented cars from various companies, but the experience with CarRental was exceptional.",
+      "I've rented cars from various companies, but the experience with DrivRent was exceptional.",
   },
   {
     name: "John Smith",
@@ -18,7 +18,7 @@ const testimonials = [
     image: assets.testimonial_image_2,
     rating: 5,
     feedback:
-      "CarRental made my trip so much easier. The car was delivered right to my door, and the customer service was fantastic!",
+      "DrivRent made my trip so much easier. The car was delivered right to my door, and the customer service was fantastic!",
   },
   {
     name: "Ava Johnson",
@@ -26,7 +26,7 @@ const testimonials = [
     image: assets.testimonial_image_1,
     rating: 5,
     feedback:
-      "I highly recommend CarRental! Their fleet is amazing, and I always feel like I'm getting the best deal with excellent service.",
+      "I highly recommend DrivRent! Their fleet is amazing, and I always feel like I'm getting the best deal with excellent service.",
   },
 ];
 
@@ -56,7 +56,6 @@ const cardVariants = {
 const Testimonial = () => {
   return (
     <div className="flex flex-col items-center py-18 px-6 md:px-16 lg:px-24 xl:px-32">
-
       {/* Title Animation */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
@@ -102,9 +101,7 @@ const Testimonial = () => {
               />
 
               <div>
-                <h3 className="font-semibold text-gray-900">
-                  {t.name}
-                </h3>
+                <h3 className="font-semibold text-gray-900">{t.name}</h3>
 
                 <span className="text-xs text-gray-400 mt-1 block">
                   {t.location}

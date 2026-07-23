@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { assets, dummyCarData } from "../../assets/assets";
-import Title from "../../components/owner/Title";
+import { motion } from "motion/react";
+import { Car, Eye, EyeOff, Trash2 } from "lucide-react";
+import { assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 
@@ -61,77 +62,162 @@ const ManageCar = () => {
   }, [isOwner]);
 
   return (
-    <div className="px-4 pt-10 md:px-10 w-full">
-      <Title
-        title="Manage Cars"
-        subTitle="view all listed cars, update their details, or remove them from the booking platform"
-      ></Title>
+    <div className="flex-1 bg-light min-h-screen">
+      <div className="w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-14 py-9">
+        {/* Header */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold tracking-[0.14em] text-primary uppercase">
+            Fleet
+          </p>
+          <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mt-1">
+            Manage Cars
+          </h1>
+          <p className="text-gray-500 mt-2">
+            View all listed cars, update their availability, or remove them from
+            the booking platform.
+          </p>
+        </div>
 
-      <div className="max-w-3xl w-full rounded-md overflow-hidden border border-borderColor mt-6">
-        <table className="w-full border-collapse text-left text-sm text-gray-600">
-          <thead className="text-gray-600">
-            <tr>
-              <th className="p-3 font-medium">Car</th>
-              <th className="p-3 font-medium max-md:hidden">Category</th>
-              <th className="p-3 font-medium">Price</th>
-              <th className="p-3 font-medium max-md:hidden">Status</th>
-              <th className="p-3 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cars.map((car, index) => (
-              <tr key={index} className="border-t border-borderColor">
-                <td className="p-3 flex items-center gap-3">
-                  <img
-                    src={car.image}
-                    alt=""
-                    className="h-12 w-12 aspect-square rounded-md object-cover"
-                  />
-                  <div className="max-md:hidden">
-                    <p className="font-medium">
-                      {car.brand} {car.model}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {car.seating_capacity} • {car.transmission}
-                    </p>
-                  </div>
-                </td>
+        {/* Summary strip — mirrors the gradient hero pattern used on the profile page */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="rounded-2xl px-6 py-6 sm:px-8 sm:py-7 bg-gradient-to-r from-primary to-primary-dull text-white flex items-center justify-between gap-5 flex-wrap"
+        >
+          <span className="grid place-items-center w-14 h-14 rounded-2xl bg-white/15 shrink-0">
+            <Car size={26} />
+          </span>
+          <div>
+            <p className="text-3xl font-bold leading-none">{cars.length}</p>
+            <p className="text-sm text-white/85 mt-1.5">
+              {cars.length === 1 ? "car" : "cars"} currently listed
+            </p>
+          </div>
+        </motion.div>
 
-                <td className="p-3 max-md:hidden">{car.category}</td>
-                <td className="p-3">
-                  {currency}
-                  {car.pricePerDay}/day
-                </td>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05 }}
+          className="rounded-2xl overflow-hidden border border-borderColor bg-white mt-6"
+        >
+          <div className="flex items-center gap-3 px-6 md:px-8 py-5 border-b border-borderColor">
+            <span className="grid place-items-center w-9 h-9 rounded-xl bg-primary/10 text-primary">
+              <Car size={17} />
+            </span>
+            <h2 className="text-base font-semibold text-gray-800">
+              Your listings
+            </h2>
+          </div>
 
-                <td className="p-3 max-md:hidden">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs ${car.isAvailable ? "bg-green-100 text-green-500" : "bg-red-100 text-red-500"}`}
-                  >
-                    {car.isAvailable ? "Available" : "Unavailable"}
-                  </span>
-                </td>
+          {cars.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+              <div className="w-14 h-14 rounded-full bg-primary/10 grid place-items-center">
+                <Car size={24} className="text-primary" />
+              </div>
+              <p className="font-semibold text-gray-700 text-lg">
+                No cars listed yet
+              </p>
+              <p className="text-sm text-gray-500">
+                Cars you add will show up here.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-left text-sm text-gray-600">
+                <thead className="text-gray-500 bg-light">
+                  <tr>
+                    <th className="p-4 font-semibold">Car</th>
+                    <th className="p-4 font-semibold max-md:hidden">
+                      Category
+                    </th>
+                    <th className="p-4 font-semibold">Price</th>
+                    <th className="p-4 font-semibold max-md:hidden">Status</th>
+                    <th className="p-4 font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cars.map((car, index) => (
+                    <tr
+                      key={index}
+                      className="border-t border-borderColor hover:bg-light/60 transition-colors"
+                    >
+                      <td className="p-4 flex items-center gap-3.5">
+                        <img
+                          src={car.image}
+                          alt=""
+                          className="h-14 w-14 aspect-square rounded-xl object-cover shrink-0"
+                        />
+                        <div className="max-md:hidden">
+                          <p className="font-semibold text-gray-800 text-[15px]">
+                            {car.brand} {car.model}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-0.5">
+                            {car.seating_capacity} seats • {car.transmission}
+                          </p>
+                        </div>
+                      </td>
 
-                <td className="flex items-center p-3">
-                  <img
-                    onClick={() => toggleAvailability(car._id)}
-                    src={
-                      car.isAvailable ? assets.eye_close_icon : assets.eye_icon
-                    }
-                    alt=""
-                    className="cursor-pointer"
-                  />
+                      <td className="p-4 max-md:hidden">{car.category}</td>
+                      <td className="p-4 font-semibold text-gray-800 text-[15px]">
+                        {currency}
+                        {car.pricePerDay}
+                        <span className="text-gray-400 font-normal text-sm">
+                          /day
+                        </span>
+                      </td>
 
-                  <img
-                    onClick={() => deleteCar(car._id)}
-                    src={assets.delete_icon}
-                    alt=""
-                    className="cursor-pointer"
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      <td className="p-4 max-md:hidden">
+                        <span
+                          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
+                            car.isAvailable
+                              ? "bg-emerald-50 text-emerald-600"
+                              : "bg-red-50 text-red-500"
+                          }`}
+                        >
+                          {car.isAvailable ? "Available" : "Unavailable"}
+                        </span>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.06 }}
+                            whileTap={{ scale: 0.94 }}
+                            onClick={() => toggleAvailability(car._id)}
+                            title={
+                              car.isAvailable
+                                ? "Mark unavailable"
+                                : "Mark available"
+                            }
+                            className="grid place-items-center w-10 h-10 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                          >
+                            {car.isAvailable ? (
+                              <Eye size={19} />
+                            ) : (
+                              <EyeOff size={19} />
+                            )}
+                          </motion.button>
+
+                          <motion.button
+                            whileHover={{ scale: 1.06 }}
+                            whileTap={{ scale: 0.94 }}
+                            onClick={() => deleteCar(car._id)}
+                            title="Delete car"
+                            className="grid place-items-center w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                          >
+                            <Trash2 size={19} />
+                          </motion.button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );

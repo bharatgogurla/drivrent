@@ -11,3 +11,13 @@
   --color-light: #f1f5f9;
   --color-borderColor: #c4c7d2;
 }
+
+/* login route animation */
+@keyframes route-travel {
+  to {
+    stroke-dashoffset: -160;
+  }
+}
+.route-travel {
+  animation: route-travel 6s linear infinite;
+}

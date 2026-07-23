@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "motion/react";
+import { Car } from "lucide-react";
 
 const Navbar = () => {
   const { setShowLogin, user, logout, isOwner, axios, setIsOwner } =
@@ -48,22 +49,21 @@ const Navbar = () => {
         isHome ? "bg-light" : "bg-white"
       }`}
     >
-      <motion.div       
-        whileHover={{
-          y: -2,
-          rotate: -2,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 300,
-        }}
-        className="flex items-center gap-1.5"
-      >
-        <img src="/favicon.svg" alt="DrivRent" className="h-8 w-8" />
-        <span className="text-2xl font-bold leading-none text-gray-700">
-          DrivRent
-        </span>
-      </motion.div>
+      <div className="flex items-center gap-2.5">
+        <motion.div
+          whileHover={{ y: -2, rotate: -2 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          className="flex items-center gap-2 cursor-default"
+        >
+          <div className="w-12 h-10 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-blue-600/30">
+            <Car className="text-white" size={28} strokeWidth={2.2} />
+          </div>
+
+          <span className="text-2xl font-extrabold tracking-tight">
+            <span className="text-slate-900">DrivRent</span>
+          </span>
+        </motion.div>
+      </div>
 
       {/* Backdrop for mobile menu */}
       <AnimatePresence>

@@ -123,7 +123,7 @@ export const changeBookingStatus = async (req, res) => {
     booking.status = status;
     await booking.save();
 
-    res.json({ sucess: true, message: "Status Updated" });
+    res.json({ success: true, message: "Status Updated" });
   } catch (error) {
     console.log(error.message);
     res.json({ sucess: false, message: error.message });
