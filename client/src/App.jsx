@@ -44,9 +44,9 @@ const RenterProtectedRoute = ({ children }) => {
     return <Loader />;
   }
 
-  if (!token) {
-    return <Navigate to="/" replace />;
-  }
+ if (!token) {
+    return null;
+}
 
   if (isOwner) {
     return <Navigate to="/owner" replace />;
@@ -56,15 +56,7 @@ const RenterProtectedRoute = ({ children }) => {
 };
 
 const OwnerProtectedRoute = ({ children }) => {
-  const { isOwner, loading, token, setShowLogin } = useAppContext();
-
-  useEffect(() => {
-    if (!loading && (!token || !isOwner)) {
-      if (!token) {
-        setShowLogin(true);
-      }
-    }
-  }, [loading, token, isOwner, setShowLogin]);
+  const { isOwner, loading, token } = useAppContext();
 
   if (loading) {
     return <Loader />;
@@ -88,46 +80,11 @@ const App = () => {
       {!isOwnerPath && <Navbar />}
 
       <Routes>
-        <Route
-          path="/"
-          element={
-            <PublicRoute>
-              <Home />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/car-details/:id"
-          element={
-            <PublicRoute>
-              <CarDetails />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/cars"
-          element={
-            <PublicRoute>
-              <Cars />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/my-bookings"
-          element={
-            <RenterProtectedRoute>
-              <MyBooking />
-            </RenterProtectedRoute>
-          }
-        />
-        <Route
-          path="/owner"
-          element={
-            <OwnerProtectedRoute>
-              <Layout />
-            </OwnerProtectedRoute>
-          }
-        >
+        <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
+        <Route path="/car-details/:id" element={<PublicRoute><CarDetails /></PublicRoute>} />
+        <Route path="/cars" element={<PublicRoute><Cars /></PublicRoute>} />
+        <Route path="/my-bookings" element={<RenterProtectedRoute><MyBooking /></RenterProtectedRoute>} />
+        <Route path="/owner" element={<OwnerProtectedRoute><Layout /></OwnerProtectedRoute>}>
           <Route index element={<Dashboard />}></Route>
           <Route path="add-car" element={<AddCar />}></Route>
           <Route path="manage-cars" element={<ManageCars />}></Route>

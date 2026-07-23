@@ -37,7 +37,7 @@ const PlateBadge = ({ role, accent, dark }) => (
     <span
       className={`font-mono text-[11px] tracking-[0.15em] ${dark ? "text-white/70" : "text-gray-400"}`}
     >
-      DRIVRENT 
+      DRIVRENT
     </span>
   </div>
 );
@@ -53,7 +53,11 @@ const Field = ({ id, label, icon: Icon, accent, ...props }) => {
         className="flex items-center gap-2.5 h-12 rounded-full border bg-white pl-5 pr-4 transition-colors motion-reduce:transition-none"
         style={{ borderColor: focused ? accent : "var(--color-borderColor)" }}
       >
-        <Icon size={16} className="shrink-0" style={{ color: focused ? accent : "#9CA3AF" }} />
+        <Icon
+          size={16}
+          className="shrink-0"
+          style={{ color: focused ? accent : "#9CA3AF" }}
+        />
         <input
           id={id}
           {...props}
@@ -75,7 +79,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,7 +97,10 @@ const Login = () => {
     setLoading(true);
     try {
       const { name, email, password } = formData;
-      const payload = mode === "login" ? { email, password, role } : { name, email, password, role };
+      const payload =
+        mode === "login"
+          ? { email, password, role }
+          : { name, email, password, role };
       const { data } = await axios.post(`/api/user/${mode}`, payload);
 
       if (data.success) {
@@ -109,7 +120,10 @@ const Login = () => {
 
   return (
     <div
-      onClick={() => setShowLogin(false)}
+      onClick={() => {
+        setShowLogin(false);
+        navigate("/", { replace: true });
+      }}
       className="fixed inset-0 z-100 flex items-center justify-center bg-[#0f172a]/70 backdrop-blur-sm p-4"
     >
       <motion.div
@@ -117,10 +131,12 @@ const Login = () => {
         initial={{ opacity: 0, y: 24, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 12, scale: 0.98 }}
-        transition={{ duration: prefersReducedMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+        transition={{
+          duration: prefersReducedMotion ? 0 : 0.32,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         className="relative w-full max-w-[840px] grid grid-cols-1 md:grid-cols-[0.85fr_1fr] rounded-[28px] overflow-hidden shadow-2xl bg-light"
       >
-
         {/* Route panel — signature element: a dashed route that quietly travels
             the length of the card, echoing the idea of a trip in progress. */}
         <div className="relative hidden md:flex flex-col justify-between bg-[#0b1220] text-white px-8 py-9 overflow-hidden">
@@ -156,9 +172,7 @@ const Login = () => {
             >
               {active.eyebrow}
             </span>
-            <h2
-              className="mt-3 uppercase text-[28px] leading-[1.15] tracking-wide font-semibold"
-            >
+            <h2 className="mt-3 uppercase text-[28px] leading-[1.15] tracking-wide font-semibold">
               {active.heading}
             </h2>
           </div>
@@ -191,7 +205,10 @@ const Login = () => {
               className="absolute inset-y-1 w-[calc(50%-4px)] rounded-full motion-reduce:transition-none"
               style={{ background: active.accent }}
               animate={{ x: role === "owner" ? "calc(100% + 4px)" : "0%" }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: "easeOut" }}
+              transition={{
+                duration: prefersReducedMotion ? 0 : 0.28,
+                ease: "easeOut",
+              }}
             />
             {Object.entries(ROLE_CONTENT).map(([key, val]) => (
               <button
@@ -207,7 +224,10 @@ const Login = () => {
             ))}
           </div>
 
-          <form onSubmit={onSubmitHandler} className="mt-6 flex flex-col gap-3.5">
+          <form
+            onSubmit={onSubmitHandler}
+            className="mt-6 flex flex-col gap-3.5"
+          >
             <AnimatePresence initial={false}>
               {mode === "register" && (
                 <motion.div
@@ -253,9 +273,17 @@ const Login = () => {
               </label>
               <div
                 className="relative flex items-center gap-2.5 h-12 rounded-full border bg-white pl-5 pr-4 transition-colors motion-reduce:transition-none"
-                style={{ borderColor: passwordFocused ? active.accent : "var(--color-borderColor)" }}
+                style={{
+                  borderColor: passwordFocused
+                    ? active.accent
+                    : "var(--color-borderColor)",
+                }}
               >
-                <Lock size={16} className="shrink-0" style={{ color: passwordFocused ? active.accent : "#9CA3AF" }} />
+                <Lock
+                  size={16}
+                  className="shrink-0"
+                  style={{ color: passwordFocused ? active.accent : "#9CA3AF" }}
+                />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -295,15 +323,23 @@ const Login = () => {
               className="mt-2 h-12 rounded-full text-white font-medium text-sm transition-opacity disabled:opacity-60"
               style={{ background: active.accent }}
             >
-              {loading ? "One moment…" : mode === "login" ? "Sign in" : "Create account"}
+              {loading
+                ? "One moment…"
+                : mode === "login"
+                  ? "Sign in"
+                  : "Create account"}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-5">
-            {mode === "login" ? "New to DrivRent? " : "Already driving with us? "}
+            {mode === "login"
+              ? "New to DrivRent? "
+              : "Already driving with us? "}
             <button
               type="button"
-              onClick={() => setMode((m) => (m === "login" ? "register" : "login"))}
+              onClick={() =>
+                setMode((m) => (m === "login" ? "register" : "login"))
+              }
               className="font-medium"
               style={{ color: active.accent }}
             >

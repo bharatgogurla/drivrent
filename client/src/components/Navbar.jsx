@@ -60,7 +60,7 @@ const Navbar = () => {
           </div>
 
           <span className="text-2xl font-extrabold tracking-tight">
-            <span className="text-slate-900">DrivRent</span>
+            <span className="text-gray-700">DrivRent</span>
           </span>
         </motion.div>
       </div>
